@@ -1,0 +1,227 @@
+---
+title: "BSAD 195 Stock Selection"
+author: "Elliot Cornfeld"
+date: "11/12/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+The stocks I chose were JPMorgan(JPM), Cisco(CSCO), Salesforce(CRM), Adobe(ADBE), and Lockheed Martin(LMT). The reason why I chose JPM was because of the scale of the company as it is the largest US bank as well as the fact that it has outperformed its competitors overall in both the good and the bad times. I chose CSCO because it has been a dominant player in the networking hardware market as well as recently expanding more into software production which puts it in a strategic position to see synergies by producing both hardware and software products. I chose CRM because of the growing awareness amongst businesses that customers are the most valuable asset to a company. CRM produces the best software to organize customer relationships and this need will only grow as data is utilized even more in the future. I chose ADBE because of the wide array of media software products it provides that professionals from all types of industries utilize. Additionally, their subscription based service for all of the Adobe Suite makes it attractive compared to competitors who only have some capabilities that the Adobe Suite offers. Lastly, I chose LMT because of their contract with the US to build F-35's. F-35's are the new cutting edge fighter jets that the US will undoubtedly throw billions of dollars to in the coming years.
+
+
+Packages Used:
+```{r message=FALSE, warning=FALSE}
+library(quantmod)
+library(PerformanceAnalytics)
+library(tidyverse)
+```
+
+JPM Stock Analysis:
+```{r message=FALSE, warning=FALSE}
+Stock.ticker <- "JPM"
+Stock.prices <- getSymbols(Stock.ticker, auto.assign = FALSE)
+Stock.adjusted <- Ad(Stock.prices["20090930/20190930"])
+col.names <- colnames(Stock.adjusted)
+col.names[1] <- "adjusted.price"
+colnames(Stock.adjusted) <- col.names
+Stock.adjusted$simple.return <-Return.calculate(Stock.adjusted$adjusted.price)
+Stock.adjusted$simple.return[1] <- 0
+Stock.adjusted$factor <- 1 + Stock.adjusted$simple.return
+Stock.adjusted$cum.return <- cumprod(Stock.adjusted$factor)
+Stock.adjusted$invest.10k <- 10000*Stock.adjusted$cum.return
+Stock.CAGR.yrs.10 <- Return.annualized(Stock.adjusted$simple.return["20090930/20190930"], scale=252)
+Stock.CAGR.yrs.5 <- Return.annualized(Stock.adjusted$simple.return["20140930/20190930"], scale=252)
+Stock.CAGR.yrs.3 <- Return.annualized(Stock.adjusted$simple.return["20160930/20190930"], scale=252)
+Stock.CAGR.yrs.1 <- Return.annualized(Stock.adjusted$simple.return["20180930/20190930"], scale=252)
+Stock.CAGR <- cbind(Stock.CAGR.yrs.10, Stock.CAGR.yrs.5,
+                    Stock.CAGR.yrs.3, Stock.CAGR.yrs.1)
+colnames(Stock.CAGR) <- c("10 yr","5 yr","3 yr","1 yr")
+#  Table showing the Compound Annual Growth Rate for the following time periods
+print(Stock.CAGR)
+```
+```{r}
+#  Graph showing the daily growth of $10,000 invested on September 30th, 2009 through September 30th 2019
+chartSeries(Stock.adjusted$invest.10k, name = "JPM Daily Growth of $10,000", theme = chartTheme("white"))
+```
+```{r}
+#  Net Income 2013-2017
+netIncome <- data.frame(
+  income = c(17923, 21762, 24442, 24733, 24441),
+  year = c(2013, 2014, 2015, 2016, 2017))
+ggplot(data = netIncome, mapping = aes(x = year, y = income))+
+  geom_point()+
+  geom_line()+
+  theme_light()+
+  labs(title = "JPM Net Income History 2013-2017",
+       y = "income($ in millions)")
+```
+
+CSCO Stock Analysis:
+```{r}
+#  Cisco Stock Analysis
+Stock.ticker <- "CSCO"
+Stock.prices <- getSymbols(Stock.ticker, auto.assign = FALSE)
+Stock.adjusted <- Ad(Stock.prices["20090930/20190930"])
+col.names <- colnames(Stock.adjusted)
+col.names[1] <- "adjusted.price"
+colnames(Stock.adjusted) <- col.names
+Stock.adjusted$simple.return <-Return.calculate(Stock.adjusted$adjusted.price)
+Stock.adjusted$simple.return[1] <- 0
+Stock.adjusted$factor <- 1 + Stock.adjusted$simple.return
+Stock.adjusted$cum.return <- cumprod(Stock.adjusted$factor)
+Stock.adjusted$invest.10k <- 10000*Stock.adjusted$cum.return
+Stock.CAGR.yrs.10 <- Return.annualized(Stock.adjusted$simple.return["20090930/20190930"], scale=252)
+Stock.CAGR.yrs.5 <- Return.annualized(Stock.adjusted$simple.return["20140930/20190930"], scale=252)
+Stock.CAGR.yrs.3 <- Return.annualized(Stock.adjusted$simple.return["20160930/20190930"], scale=252)
+Stock.CAGR.yrs.1 <- Return.annualized(Stock.adjusted$simple.return["20180930/20190930"], scale=252)
+Stock.CAGR <- cbind(Stock.CAGR.yrs.10, Stock.CAGR.yrs.5,
+                    Stock.CAGR.yrs.3, Stock.CAGR.yrs.1)
+colnames(Stock.CAGR) <- c("10 yr","5 yr","3 yr","1 yr")
+#  Table showing the Compound Annual Growth Rate for the following time periods
+print(Stock.CAGR)
+```
+```{r}
+#  Graph showing the daily growth of $10,000 invested on September 30th, 2009 through September 30th 2019
+chartSeries(Stock.adjusted$invest.10k, name = "CSCO Daily Growth of $10,000", theme = chartTheme("white"))
+
+```
+```{r}
+#  Net Income 2013-2017
+netIncome <- data.frame(
+  income = c(9983,7853,8981,10739, 9609),
+  year = c(2013, 2014, 2015, 2016, 2017))
+ggplot(data = netIncome, mapping = aes(x = year, y = income))+
+  geom_point()+
+  geom_line()+
+  theme_light()+
+  labs(title = "CSCO Net Income History 2013-2017",
+       y = "income($ in millions)")
+```
+
+CRM Stock Analysis:
+```{r}
+Stock.ticker <- "CRM"
+Stock.prices <- getSymbols(Stock.ticker, auto.assign = FALSE)
+Stock.adjusted <- Ad(Stock.prices["20090930/20190930"])
+col.names <- colnames(Stock.adjusted)
+col.names[1] <- "adjusted.price"
+colnames(Stock.adjusted) <- col.names
+Stock.adjusted$simple.return <-Return.calculate(Stock.adjusted$adjusted.price)
+Stock.adjusted$simple.return[1] <- 0
+Stock.adjusted$factor <- 1 + Stock.adjusted$simple.return
+Stock.adjusted$cum.return <- cumprod(Stock.adjusted$factor)
+Stock.adjusted$invest.10k <- 10000*Stock.adjusted$cum.return
+Stock.CAGR.yrs.10 <- Return.annualized(Stock.adjusted$simple.return["20090930/20190930"], scale=252)
+Stock.CAGR.yrs.5 <- Return.annualized(Stock.adjusted$simple.return["20140930/20190930"], scale=252)
+Stock.CAGR.yrs.3 <- Return.annualized(Stock.adjusted$simple.return["20160930/20190930"], scale=252)
+Stock.CAGR.yrs.1 <- Return.annualized(Stock.adjusted$simple.return["20180930/20190930"], scale=252)
+Stock.CAGR <- cbind(Stock.CAGR.yrs.10, Stock.CAGR.yrs.5,
+                    Stock.CAGR.yrs.3, Stock.CAGR.yrs.1)
+colnames(Stock.CAGR) <- c("10 yr","5 yr","3 yr","1 yr")
+#  Table showing the Compound Annual Growth Rate for the following time periods
+print(Stock.CAGR)
+```
+```{r}
+#  Graph showing the daily growth of $10,000 invested on September 30th, 2009 through September 30th 2019
+chartSeries(Stock.adjusted$invest.10k, name = "CRM Daily Growth of $10,000", theme = chartTheme("white"))
+```
+```{r}
+#  Net Income 2013-2017
+netIncome <- data.frame(
+  income = c(-270, -232, -263, -47, 180 ),
+  year = c(2013, 2014, 2015, 2016, 2017))
+ggplot(data = netIncome, mapping = aes(x = year, y = income))+
+  geom_point()+
+  geom_line()+
+  theme_light()+
+  labs(title = "CRM Net Income History 2013-2017",
+       y = "income($ in millions)")
+```
+
+ADBE Stock Analysis:
+```{r}
+Stock.ticker <- "ADBE"
+Stock.prices <- getSymbols(Stock.ticker, auto.assign = FALSE)
+Stock.adjusted <- Ad(Stock.prices["20090930/20190930"])
+col.names <- colnames(Stock.adjusted)
+col.names[1] <- "adjusted.price"
+colnames(Stock.adjusted) <- col.names
+Stock.adjusted$simple.return <-Return.calculate(Stock.adjusted$adjusted.price)
+Stock.adjusted$simple.return[1] <- 0
+Stock.adjusted$factor <- 1 + Stock.adjusted$simple.return
+Stock.adjusted$cum.return <- cumprod(Stock.adjusted$factor)
+Stock.adjusted$invest.10k <- 10000*Stock.adjusted$cum.return
+Stock.CAGR.yrs.10 <- Return.annualized(Stock.adjusted$simple.return["20090930/20190930"], scale=252)
+Stock.CAGR.yrs.5 <- Return.annualized(Stock.adjusted$simple.return["20140930/20190930"], scale=252)
+Stock.CAGR.yrs.3 <- Return.annualized(Stock.adjusted$simple.return["20160930/20190930"], scale=252)
+Stock.CAGR.yrs.1 <- Return.annualized(Stock.adjusted$simple.return["20180930/20190930"], scale=252)
+Stock.CAGR <- cbind(Stock.CAGR.yrs.10, Stock.CAGR.yrs.5,
+                    Stock.CAGR.yrs.3, Stock.CAGR.yrs.1)
+colnames(Stock.CAGR) <- c("10 yr","5 yr","3 yr","1 yr")
+#  Table showing the Compound Annual Growth Rate for the following time periods
+print(Stock.CAGR)
+```
+```{r}
+#  Graph showing the daily growth of $10,000 invested on September 30th, 2009 through September 30th 2019
+chartSeries(Stock.adjusted$invest.10k, name = "ADBE Daily Growth of $10,000", theme = chartTheme("white"))
+
+```
+```{r}
+#  Net Income 2013-2017
+netIncome <- data.frame(
+  income = c(290,268,630,1169,1694),
+  year = c(2013, 2014, 2015, 2016, 2017))
+ggplot(data = netIncome, mapping = aes(x = year, y = income))+
+  geom_point()+
+  geom_line()+
+  theme_light()+
+  labs(title = "ADBE Net Income History 2013-2017",
+       y = "income($ in millions)")
+
+```
+
+LMT Stock Analysis:
+```{r}
+Stock.ticker <- "LMT"
+Stock.prices <- getSymbols(Stock.ticker, auto.assign = FALSE)
+Stock.adjusted <- Ad(Stock.prices["20090930/20190930"])
+col.names <- colnames(Stock.adjusted)
+col.names[1] <- "adjusted.price"
+colnames(Stock.adjusted) <- col.names
+Stock.adjusted$simple.return <-Return.calculate(Stock.adjusted$adjusted.price)
+Stock.adjusted$simple.return[1] <- 0
+Stock.adjusted$factor <- 1 + Stock.adjusted$simple.return
+Stock.adjusted$cum.return <- cumprod(Stock.adjusted$factor)
+Stock.adjusted$invest.10k <- 10000*Stock.adjusted$cum.return
+Stock.CAGR.yrs.10 <- Return.annualized(Stock.adjusted$simple.return["20090930/20190930"], scale=252)
+Stock.CAGR.yrs.5 <- Return.annualized(Stock.adjusted$simple.return["20140930/20190930"], scale=252)
+Stock.CAGR.yrs.3 <- Return.annualized(Stock.adjusted$simple.return["20160930/20190930"], scale=252)
+Stock.CAGR.yrs.1 <- Return.annualized(Stock.adjusted$simple.return["20180930/20190930"], scale=252)
+Stock.CAGR <- cbind(Stock.CAGR.yrs.10, Stock.CAGR.yrs.5,
+                    Stock.CAGR.yrs.3, Stock.CAGR.yrs.1)
+colnames(Stock.CAGR) <- c("10 yr","5 yr","3 yr","1 yr")
+#  Table showing the Compound Annual Growth Rate for the following time periods
+print(Stock.CAGR)
+```
+```{r}
+#  Graph showing the daily growth of $10,000 invested on September 30th, 2009 through September 30th 2019
+chartSeries(Stock.adjusted$invest.10k, name = "LMT Daily Growth of $10,000", theme = chartTheme("white"))
+
+```
+```{r}
+#  Net Income 2013-2017
+netIncome <- data.frame(
+  income = c(2981,3614,3605,5302,2002),
+  year = c(2013, 2014, 2015, 2016, 2017))
+ggplot(data = netIncome, mapping = aes(x = year, y = income))+
+  geom_point()+
+  geom_line()+
+  theme_light()+
+  labs(title = "Net Income History 2013-2017",
+       y = "income($ in millions)")
+```
+
+
+
